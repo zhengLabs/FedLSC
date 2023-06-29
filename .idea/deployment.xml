@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="jky@202.197.33.62:32000 password (1)" remoteFilesAllowedToDisappearOnAutoupload="false" autoUploadExternalChanges="true" showExcludedInSync="true">
+    <serverData>
+      <paths name="jky@202.197.33.62:32000 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/jky/zyq/SPFS" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/data" />
+            <excludedPath path="/home/jky/zyq/SPFS/data" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+      <paths name="jky@202.197.33.62:32000 password (1)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/jky/zyq/SPFS" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/data" />
+            <excludedPath path="/home/jky/zyq/SPFS/data" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+      <paths name="lzj@119.23.152.46:2200 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/data_common/lzj/zyq/SPFS" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="lzj@119.23.152.46:2200 password (2)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/data_common/lzj/zyq/SPFS" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/data" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>
