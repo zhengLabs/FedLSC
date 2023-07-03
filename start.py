@@ -17,19 +17,15 @@ LSTMFedSPFTopK
 env = r"/home/jky/anaconda3/envs/zyq-py38/bin/python"
 # seeds = random.sample(range(1, 10000), 5)
 seeds = [9484, 5215, 2303, 1602, 1706]
-cuda = [0, 0, 3, 2, 1]
+cuda = [0, 1, 2, 2, 1]
 
 for seed in seeds:
     os.system(
-        # f"CUDA_VISIBLE_DEVICES={cuda[0]} python A_Start_Traing.py --type sgd --seed {seed}"
-        # f"& CUDA_VISIBLE_DEVICES={cuda[1]} python A_Start_Traing.py --type sgdm --seed {seed}"
-        # f"& CUDA_VISIBLE_DEVICES={cuda[2]} python A_Start_Traing.py --type rmsprop --seed {seed}"
-        # f"& CUDA_VISIBLE_DEVICES={cuda[3]} python A_Start_Traing.py --type adam --seed {seed}"
-        f"CUDA_VISIBLE_DEVICES={cuda[0]} python A_Start_Traing.py --type spf --seed {seed} --check 10"
-        f"& CUDA_VISIBLE_DEVICES={cuda[4]} python A_Start_Traing.py --type spf --seed {seed} --check 20"
-        f"& CUDA_VISIBLE_DEVICES={cuda[2]} python A_Start_Traing.py --type spf --seed {seed} --check 30"
-        f"& CUDA_VISIBLE_DEVICES={cuda[3]} python A_Start_Traing.py --type spf --seed {seed} --check 40"
+        f"CUDA_VISIBLE_DEVICES={cuda[0]} python training_cov.py --type FedAVG --seed {seed}"
+        f"& CUDA_VISIBLE_DEVICES={cuda[1]} python training_cov.py --type FedAPF --seed {seed}"
+        f"& CUDA_VISIBLE_DEVICES={cuda[2]} python training_cov.py --type FedSPF --seed {seed}"
     )
+    break
 
 # conv-fed
 # os.system(f"CUDA_VISIBLE_DEVICES={cuda[0]} {env} training_cov.py --mod_name Alex --type FedSPF3 --epoch 200 --distribution iid  --seed {seeds[3]} "

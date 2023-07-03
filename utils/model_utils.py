@@ -12,7 +12,6 @@ import numpy as np
 SamplingProportion = 1
 
 
-
 # 从优化器中获取梯度
 def get_grads_from_optim(optim) -> list:
     grads = []
@@ -62,6 +61,17 @@ def get_grads_numpy(optim: torch.optim.Optimizer, mod_len: int) -> np.ndarray:
         grads_numpy[start:end] = grad
         start = end
     return grads_numpy
+
+
+def get_params_numpy(optim: torch.optim.Optimizer, mod_len: int) -> np.ndarray:
+    params_numpy = np.empty(mod_len)
+    start = 0
+    for param in optim.param_groups[0]['params']:
+        param = param.data.view(-1).cpu().numpy()
+        end = start + len(param)
+        params_numpy[start:end] = param
+        start = end
+    return params_numpy
 
 
 # 从优化器中获取梯度的tensor数组

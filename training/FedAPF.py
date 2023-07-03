@@ -3,10 +3,12 @@
 # @Author  : yicao
 import argparse
 import copy
+import csv
 import math
 import os
 import time
 
+import numpy as np
 import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader, Subset
@@ -18,6 +20,17 @@ from utils.train_loader_distribute import TrainLoader
 
 def train(seed=50, client_num=16, batch_size=100, epoch=200, local_sgd=10, lr=0.1
           , dataset='Cifar10', distribution='iid', class_num=10, mod_name='LeNet', check=0, cuda=0):
+    # 打印当前工作目录
+    print(os.getcwd())
+    # os.chdir("../")
+    print(os.getcwd())
+    # 读取主目录painting下的random_numbers.txt文件，获取随机数
+    random_list = []
+    with open(r'./painting/random_numbers.txt', 'r') as f:
+        for line in f:
+            random_list.append(int(line.strip()))
+    random_np = np.array(random_list)
+
     train_start_time = time.time()
     public_utils.set_seed(seed)
     log_name = f"{os.path.basename(__file__)[:-3]} {dataset}-{distribution} {mod_name}" \
@@ -50,6 +63,16 @@ def train(seed=50, client_num=16, batch_size=100, epoch=200, local_sgd=10, lr=0.
     apf_manager = APFManager.APFManager(mod_len)
     #  记录客户端传过来的参数
     params = torch.empty([client_num, mod_len])
+    optimizer_center = optim.SGD(center_model.parameters(), lr=lr)
+
+    # 创建csv文件，记录random_list中的模型参数
+    with open(r'./results/Cifar10-center/LeNet/weight_change_apf.csv', 'w') as f:
+        csv_write = csv.writer(f)
+        csv_write.writerow(["iter"] + random_list)
+        params_np = model_utils.get_params_numpy(optimizer_center, mod_len)
+        record_np = params_np[random_np]
+        str_list = [str(val) for val in record_np.round(10)]  # 将列表中的每个值转换为字符串
+        csv_write.writerow(["0"] + str_list)
 
     sub_set_len = len(train_set) // client_num
     communication_num = math.ceil(epoch * (sub_set_len / batch_size / local_sgd))
@@ -85,18 +108,23 @@ def train(seed=50, client_num=16, batch_size=100, epoch=200, local_sgd=10, lr=0.
             apf_manager.check(grad_mean)
             log_util.log(log_file, f"冻结稀疏度：{round(100. * torch.count_nonzero(apf_manager.freezing_bitmap).item() / mod_len, 2)}%")
 
-        # 每test_time个通信轮进行一次测试
-        if i % test_time == test_time - 1:
-            with torch.no_grad():
-                test_model = copy.deepcopy(center_model)
-                test_model = test_model.to(device)
-                for data in test_loader:
-                    inputs, labels = data
-                    inputs, labels = inputs.to(device), labels.to(device)
-                    outputs = test_model(inputs)
-                    record_utils.record_test(outputs, labels)
+        with open(r'./results/Cifar10-center/LeNet/weight_change_apf.csv', 'a') as f:
+            csv_write = csv.writer(f)
+            params_np = grad_mean.cpu().numpy()
+            record_np = params_np[random_np]
+            str_list = [str(val) for val in record_np.round(10)]  # 将列表中的每个值转换为字符串
+            csv_write.writerow([f"{i+1}"] + str_list)
 
-            record_utils.print_test_accuracy(i // test_time)
+        with torch.no_grad():
+            test_model = copy.deepcopy(center_model)
+            test_model = test_model.to(device)
+            for data in test_loader:
+                inputs, labels = data
+                inputs, labels = inputs.to(device), labels.to(device)
+                outputs = test_model(inputs)
+                record_utils.record_test(outputs, labels)
+
+        record_utils.print_test_accuracy(i+1)
 
     log_util.log(log_file, f"训练结束，耗时：{round(time.time() - train_start_time, 3)}s")
 
